@@ -290,18 +290,6 @@ cmp_def$avg_val = def2020avg$avg_val - def2019avg$avg_val
 cmp_def %>%
   ggplot(aes(x=Name, weight=avg_val)) + geom_bar() + facet_wrap(~stat) + coord_flip()
 
-
-#def2019_long %>%
-#  filter(Name %in% defClean$Name) %>%
-#  ggplot(aes(x=Name, weight=value)) + geom_bar() + facet_wrap(~stat) + coord_flip()
-
-#defClean %>%
-#  filter(Name %in% def2019_long$Name) %>%
-#  ggplot(aes(x=Name, weight=value)) + geom_bar() + facet_wrap(~stat) + coord_flip()
-
-cmp_def <- defClean
-cmp_def$value = defClean$value - def2019_long$value
-
 '
 Here we can see that the player Jake Hummel had a lot of big increases in these statistics,
 particularly improving the most in assisted tackles, and improving the second most in solo tackles.
@@ -309,5 +297,29 @@ particularly improving the most in assisted tackles, and improving the second mo
 JaQuan Bailey would have been another candidate, however his assistent tackles decreased significantly.
 
 So I would say Jake Hummel improved the most as a defensive player.
+'
+
+off2019avg <- ofn2019_long %>%
+  filter(Name %in% defClean$Name) %>%
+  group_by(Name, stat) %>%
+  summarize(avg_val=mean(value))
+
+off2020avg <- offClean %>%
+  filter(Name %in% def2019_long$Name) %>%
+  group_by(Name, stat) %>%
+  summarize(avg_val=mean(value))
+
+off2019avg
+off2020avg
+
+cmp_off <- off2020avg
+cmp_off$avg_val = off2020avg$avg_val - off2019avg$avg_val
+cmp_off %>%
+  ggplot(aes(x=Name, weight=avg_val)) + geom_bar() + facet_wrap(~stat) + coord_flip()
+
+'
+For offensive players who played in 2019 and 2020, it is quite clear that Breece Hall
+is the player who improved the most, having the greatest improvments over any other player
+in every single offensive statistic besides receiving yards.
 '
 
