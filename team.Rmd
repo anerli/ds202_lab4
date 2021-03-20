@@ -33,9 +33,11 @@ def <- def %>%
   mutate(across(Tackles_Solo:Pass_PB, as.numeric))
 ofn <- ofn %>%
   mutate(across(Receiving_REC:Passing_INT, as.numeric))
+bio <- bio %>%
+  mutate(Weight=as.numeric(Weight))
 ```
 
-Using across and as.numeric, we easily convert all player statistics to numeric.
+Using across and as.numeric, we easily convert all player statistics as well as weight to numeric.
 
 ## 3
 ```{r}
@@ -49,15 +51,27 @@ bio <- bio %>%
 I convert height to be inches only by separating the string and then
 recombining using inches = 12 times feet plus extra inches.
 
+
+Here we can see the structure of the cleaned data:
+```{r}
+defClean <- def
+offClean <- ofn
+bioClean <- bio
+
+str(defClean)
+str(offClean)
+str(bioClean)
+```
+
 # Part Two: Tidying Data
 
 ## 1
 
 ```{r}
-defClean <- def %>%
+defClean <- defClean %>%
   pivot_longer(Tackles_Solo:Pass_PB, names_to="stat")
 
-offClean <- ofn %>%
+offClean <- offClean %>%
   pivot_longer(Receiving_REC:Passing_INT, names_to="stat")
 
 str(defClean)

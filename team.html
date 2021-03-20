@@ -223,7 +223,9 @@ ofn &lt;- ofn %&gt;%
 <pre><code>## Warning: Problem with `mutate()` input `..1`.
 ## i NAs introduced by coercion
 ## i Input `..1` is `across(Receiving_REC:Passing_INT, as.numeric)`.</code></pre>
-<p>Using across and as.numeric, we easily convert all player statistics to numeric.</p>
+<pre class="r"><code>bio &lt;- bio %&gt;%
+  mutate(Weight=as.numeric(Weight))</code></pre>
+<p>Using across and as.numeric, we easily convert all player statistics as well as weight to numeric.</p>
 </div>
 <div id="section-2" class="section level2">
 <h2>3</h2>
@@ -233,16 +235,57 @@ ofn &lt;- ofn %&gt;%
   mutate(Height=12*HeightFeet + HeightInches) %&gt;%
   select(-HeightFeet, -HeightInches)</code></pre>
 <p>I convert height to be inches only by separating the string and then recombining using inches = 12 times feet plus extra inches.</p>
+<p>Here we can see the structure of the cleaned data:</p>
+<pre class="r"><code>defClean &lt;- def
+offClean &lt;- ofn
+bioClean &lt;- bio
+
+str(defClean)</code></pre>
+<pre><code>## tibble [372 x 11] (S3: tbl_df/tbl/data.frame)
+##  $ Name             : Factor w/ 37 levels &quot;Akers, Landen&quot;,..: 26 26 26 26 26 26 26 26 26 26 ...
+##  $ Opponent_Opponent: Factor w/ 11 levels &quot;Baylor&quot;,&quot;Kansas&quot;,..: 4 8 5 10 6 2 1 3 9 11 ...
+##  $ Tackles_Solo     : num [1:372] 2 6 6 3 7 4 7 4 4 2 ...
+##  $ Tackles_ASST     : num [1:372] 4 4 5 0 3 1 4 3 9 3 ...
+##  $ Tackles_TFL      : num [1:372] 1 0 1.5 1 1 0 1.5 2.5 1.5 0 ...
+##  $ Tackles_Sack     : num [1:372] 0 0 0.5 0 0 0 0 1 0 0 ...
+##  $ Turnover_FF      : num [1:372] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ Turnover_FR      : num [1:372] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ Turnover_INT     : num [1:372] 0 1 0 0 1 0 1 1 0 0 ...
+##  $ Pass_QBH         : num [1:372] 0 0 1 0 0 0 2 1 0 0 ...
+##  $ Pass_PB          : num [1:372] 0 0 0 0 0 1 0 0 1 0 ...</code></pre>
+<pre class="r"><code>str(offClean)</code></pre>
+<pre><code>## tibble [156 x 12] (S3: tbl_df/tbl/data.frame)
+##  $ Name             : Factor w/ 16 levels &quot;Akers, Landen&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Opponent_Opponent: Factor w/ 11 levels &quot;Baylor&quot;,&quot;Kansas&quot;,..: 4 8 5 10 6 2 1 3 9 11 ...
+##  $ Receiving_REC    : num [1:156] 0 2 1 4 0 6 1 0 1 1 ...
+##  $ Receiving_YDS    : num [1:156] 0 60 35 34 0 76 11 0 10 2 ...
+##  $ Receiving_TD     : num [1:156] 0 0 0 0 0 0 0 0 0 1 ...
+##  $ Rushing_ATT      : num [1:156] NA NA NA NA NA NA NA NA NA NA ...
+##  $ Rushing_YDS      : num [1:156] NA NA NA NA NA NA NA NA NA NA ...
+##  $ Rushing_TD       : num [1:156] NA NA NA NA NA NA NA NA NA NA ...
+##  $ Passing_CMP-ATT  : num [1:156] NA NA NA NA NA NA NA NA NA NA ...
+##  $ Passing_YDS      : num [1:156] NA NA NA NA NA NA NA NA NA NA ...
+##  $ Passing_TD       : num [1:156] NA NA NA NA NA NA NA NA NA NA ...
+##  $ Passing_INT      : num [1:156] NA NA NA NA NA NA NA NA NA NA ...</code></pre>
+<pre class="r"><code>str(bioClean)</code></pre>
+<pre><code>## tibble [116 x 7] (S3: tbl_df/tbl/data.frame)
+##  $ Name      : Factor w/ 116 levels &quot;Akers, Landen&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Position  : chr [1:116] &quot;Wide Receiver&quot; &quot;Tight End&quot; &quot;Wide Receiver&quot; &quot;Defensive Back&quot; ...
+##  $ Weight    : num [1:116] 191 240 208 180 195 199 253 261 288 182 ...
+##  $ Class     : chr [1:116] &quot;Redshirt Senior&quot; &quot;Redshirt Senior&quot; &quot;Redshirt Freshman&quot; &quot;Freshman&quot; ...
+##  $ Hometown  : chr [1:116] &quot;Cedar Rapids, Iowa&quot; &quot;Nixa, Mo.&quot; &quot;Seffner, Fla.&quot; &quot;Ft. Lauderdale, Fla.&quot; ...
+##  $ Highschool: chr [1:116] &quot;Washington&quot; &quot;Nixa&quot; &quot;Armwood&quot; &quot;Cardinal Gibbons&quot; ...
+##  $ Height    : num [1:116] 72 79 77 72 72 72 75 74 74 74 ...</code></pre>
 </div>
 </div>
 <div id="part-two-tidying-data" class="section level1">
 <h1>Part Two: Tidying Data</h1>
 <div id="section-3" class="section level2">
 <h2>1</h2>
-<pre class="r"><code>defClean &lt;- def %&gt;%
+<pre class="r"><code>defClean &lt;- defClean %&gt;%
   pivot_longer(Tackles_Solo:Pass_PB, names_to=&quot;stat&quot;)
 
-offClean &lt;- ofn %&gt;%
+offClean &lt;- offClean %&gt;%
   pivot_longer(Receiving_REC:Passing_INT, names_to=&quot;stat&quot;)
 
 str(defClean)</code></pre>
@@ -289,13 +332,13 @@ str(defClean)</code></pre>
 head(bio1)</code></pre>
 <pre><code>## # A tibble: 6 x 8
 ##   Name         Position    Weight Class       City     State Highschool   Height
-##   &lt;fct&gt;        &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;
-## 1 Akers, Land~ Wide Recei~ 191    Redshirt S~ Cedar R~ Iowa  Washington       72
-## 2 Allen, Chase Tight End   240    Redshirt S~ Nixa     Mo.   Nixa             79
-## 3 Anderson, E~ Wide Recei~ 208    Redshirt F~ Seffner  Fla.  Armwood          77
-## 4 Antoine Jr.~ Defensive ~ 180    Freshman    Ft. Lau~ Fla.  Cardinal Gi~     72
-## 5 Assalley, C~ Placekicker 195    Redshirt S~ Napervi~ Ill.  Central          72
-## 6 Azunna, Arn~ Defensive ~ 199    Redshirt S~ Grand P~ Texas Lake Ridge       72</code></pre>
+##   &lt;fct&gt;        &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;
+## 1 Akers, Land~ Wide Recei~    191 Redshirt S~ Cedar R~ Iowa  Washington       72
+## 2 Allen, Chase Tight End      240 Redshirt S~ Nixa     Mo.   Nixa             79
+## 3 Anderson, E~ Wide Recei~    208 Redshirt F~ Seffner  Fla.  Armwood          77
+## 4 Antoine Jr.~ Defensive ~    180 Freshman    Ft. Lau~ Fla.  Cardinal Gi~     72
+## 5 Assalley, C~ Placekicker    195 Redshirt S~ Napervi~ Ill.  Central          72
+## 6 Azunna, Arn~ Defensive ~    199 Redshirt S~ Grand P~ Texas Lake Ridge       72</code></pre>
 <p>Here we can see that the hometown has been separated into City and State columns.</p>
 </div>
 <div id="section-7" class="section level2">
