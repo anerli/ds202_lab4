@@ -250,11 +250,6 @@ str(def2019)
 str(ofn2019)
 str(bio2019)
 
-# === PART ONE: CLEANING =======================================================
-
-# 1
-# Make player names and opponent names factors
-
 def2019 <- def2019 %>% 
   mutate(Name=as.factor(Name), Opponent_Opponent=as.factor(Opponent_Opponent))
 ofn2019 <- ofn2019 %>% 
@@ -266,4 +261,53 @@ def2019 <- def2019 %>%
   mutate(across(Tackles_Solo:Pass_PB, as.numeric))
 ofn2019 <- ofn2019 %>%
   mutate(across(Rushing_ATT:Passing_INT, as.numeric))
+
+
+def2019_long <- def2019 %>%
+  pivot_longer(Tackles_Solo:Pass_PB, names_to="stat")
+
+ofn2019_long <- ofn2019 %>%
+  pivot_longer(Rushing_ATT:Passing_INT, names_to="stat")
+
+str(def2019_long)
+
+def2019avg <- def2019_long %>%
+  filter(Name %in% defClean$Name) %>%
+  group_by(Name, stat) %>%
+  summarize(avg_val=mean(value))
+
+def2020avg <- defClean %>%
+  filter(Name %in% def2019_long$Name) %>%
+  group_by(Name, stat) %>%
+  summarize(avg_val=mean(value))
+
+def2019avg
+def2020avg
+
+cmp_def <- def2020avg
+# Avg amount improved
+cmp_def$avg_val = def2020avg$avg_val - def2019avg$avg_val
+cmp_def %>%
+  ggplot(aes(x=Name, weight=avg_val)) + geom_bar() + facet_wrap(~stat) + coord_flip()
+
+
+#def2019_long %>%
+#  filter(Name %in% defClean$Name) %>%
+#  ggplot(aes(x=Name, weight=value)) + geom_bar() + facet_wrap(~stat) + coord_flip()
+
+#defClean %>%
+#  filter(Name %in% def2019_long$Name) %>%
+#  ggplot(aes(x=Name, weight=value)) + geom_bar() + facet_wrap(~stat) + coord_flip()
+
+cmp_def <- defClean
+cmp_def$value = defClean$value - def2019_long$value
+
+'
+Here we can see that the player Jake Hummel had a lot of big increases in these statistics,
+particularly improving the most in assisted tackles, and improving the second most in solo tackles.
+
+JaQuan Bailey would have been another candidate, however his assistent tackles decreased significantly.
+
+So I would say Jake Hummel improved the most as a defensive player.
+'
 
