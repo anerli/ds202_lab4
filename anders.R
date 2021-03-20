@@ -182,8 +182,88 @@ but Receiving_REC, Receiving_YDS, Receiving_TD, and Passing_CMP-ATT are all NA
 for Purdy, so clearly they will not help us figure out his overall contribution
 to the team.
 '
-purdy_off1 <- purdy_off %>% select(-Receiving_REC, -Receiving_YDS, -Receiving_TD, -`Passing_CMP-ATT`)
-purdy_off1
+#purdy_off1 <- purdy_off %>% select(-Receiving_REC, -Receiving_YDS, -Receiving_TD, -`Passing_CMP-ATT`)
+#purdy_off1
+
+'
+Again, I am rather unfamiliar with these statistics, but I believe that higher numbers
+for all of these suggest better performance.
+'
+
+'
+We will compare the performance of Purdy to the rest of the team by
+
+'
+
+#mutate(value=coalesce(value, 0)) %>%
+
+#purdy_first <- offClean %>%
+#  mutate(Name=reorder(Name, c('Purdy, Brock', #[names except purdy])))  
+
+# TODO: Reorder purdy to be first
+
+#names_except_purdy <- 
 
 
+names_except_purdy <- offClean %>% 
+  distinct(Name, .keep_all=TRUE) %>%
+  filter(Name != 'Purdy, Brock') %>%
+  select(Name)
+
+names_except_purdy <- names_except_purdy$Name
+names_except_purdy
+"
+levels(names_except_purdy)
+
+class(names)
+levels(as.factor(names))
+names['Purdy, Brock']
+
+names_except_purdy <- names %>% filter(Name != 'Purdy, Brock')
+
+names_except_purdy
+
+sapply(names_except_purdy, as.character)
+"
+
+
+cols <- c("Purdy, Brock"="red", "Akers, Landen"="grey", "Brock, Jirehl"="grey", "Hutchinson, Xavier"="grey", "Nwangwu, Kene"="grey", "Scates, Joe"="grey", "Soehner, Dylan"="grey", "Hall, Breece"="grey", "Dekkers, Hunter"="grey", "Kolar, Charlie"="grey", "Allen, Chase"="grey", "Shaw Jr., Sean"="grey", "Milton, Tarique"="grey", "Bitter, Aidan"="grey", "Jackson, Daniel"="grey", "Dean, Easton"="grey")
+cols
+
+offClean %>%
+  group_by(Name, stat) %>%
+  summarize(avg_val=mean(value, na.rm=TRUE)) %>%
+  ggplot(aes(x=Name, weight=avg_val, fill=Name)) + geom_bar() + 
+  facet_wrap(~stat) + coord_flip() +
+  scale_fill_manual(values=cols)
+
+#offClean$Name
+
+# 3
+
+
+def2019 <- readxl::read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+ofn2019 <- readxl::read_excel('cyclonesFootball2019.xlsx', sheet='Offensive')
+bio2019 <- readxl::read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
+
+str(def2019)
+str(ofn2019)
+str(bio2019)
+
+# === PART ONE: CLEANING =======================================================
+
+# 1
+# Make player names and opponent names factors
+
+def2019 <- def2019 %>% 
+  mutate(Name=as.factor(Name), Opponent_Opponent=as.factor(Opponent_Opponent))
+ofn2019 <- ofn2019 %>% 
+  mutate(Name=as.factor(Name), Opponent_Opponent=as.factor(Opponent_Opponent))
+bio2019 <- bio2019 %>% 
+  mutate(Name=as.factor(Name))
+
+def2019 <- def2019 %>%
+  mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+ofn2019 <- ofn2019 %>%
+  mutate(across(Rushing_ATT:Passing_INT, as.numeric))
 
